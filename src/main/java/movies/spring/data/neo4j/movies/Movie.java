@@ -12,7 +12,13 @@ import java.util.List;
 @Node
 public class Movie {
 
+	/*
+	 * @Node 注解表明这是一个 Neo4j 节点的实体类
+	 * @Id 是实体类的必需注解，表明被标记的属性是唯一标识符，也就是主键；
+	 */
 	@Id
+	private final Long id;
+
 	private final String title;
 
 	private final String tagline;
@@ -21,8 +27,9 @@ public class Movie {
 
 	private Long votes;
 
-	public Movie(String title, String tagline) {
-		this.title = title;
+	public Movie(Long id, String title, String tagline) {
+        this.id = id;
+        this.title = title;
 		this.tagline = tagline;
 	}
 

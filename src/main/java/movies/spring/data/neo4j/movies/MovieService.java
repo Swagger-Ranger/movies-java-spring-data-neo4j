@@ -8,12 +8,12 @@ import org.neo4j.driver.types.TypeSystem;
 import org.springframework.data.neo4j.core.DatabaseSelectionProvider;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * @author Michael Hunger
@@ -24,7 +24,11 @@ import java.util.stream.Collectors;
 @Service
 public class MovieService {
 
+	// todo liufei 将修改、分页查询补齐
+
 	private final MovieRepository movieRepository;
+
+	private final MovieNeo4jRepository movieNeo4jRepository;
 
 	private final Neo4jClient neo4jClient;
 
@@ -32,15 +36,42 @@ public class MovieService {
 
 	private final DatabaseSelectionProvider databaseSelectionProvider;
 
-	MovieService(MovieRepository movieRepository,
-				 Neo4jClient neo4jClient,
-				 Driver driver,
-				 DatabaseSelectionProvider databaseSelectionProvider) {
+
+	MovieService(MovieRepository movieRepository, MovieNeo4jRepository movieNeo4jRepository,
+                 Neo4jClient neo4jClient,
+                 Driver driver,
+                 DatabaseSelectionProvider databaseSelectionProvider) {
 
 		this.movieRepository = movieRepository;
-		this.neo4jClient = neo4jClient;
+        this.movieNeo4jRepository = movieNeo4jRepository;
+        this.neo4jClient = neo4jClient;
 		this.driver = driver;
 		this.databaseSelectionProvider = databaseSelectionProvider;
+	}
+
+	// 更新方法
+	@Transactional
+	public void updateReleasedByTitle(Long id, Integer released) {
+		if (released == null) {
+			throw new RuntimeException("Param released released is null");
+		}
+		Optional<Movie> movie = movieNeo4jRepository.findById(id);
+		if (movie.isPresent()) {
+			movie.get().setReleased(released); // 确保使用传入的ID更新
+			movieNeo4jRepository.save(movie.get());
+		} else {
+			throw new RuntimeException("Movie with id " + id + " not found.");
+		}
+	}
+
+	// 删除方法
+	@Transactional
+	public void deleteMovie(Long title) {
+		if (movieNeo4jRepository.existsById(title)) {
+			movieNeo4jRepository.deleteById(title);
+		} else {
+			throw new RuntimeException("Movie with id " + title + " not found.");
+		}
 	}
 
 	public MovieDetailsDto fetchDetailsByTitle(String title) {

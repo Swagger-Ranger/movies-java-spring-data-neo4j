@@ -14,7 +14,7 @@ import java.util.List;
  * @author Mark Angrish
  * @author Michael J. Simons
  */
-interface MovieRepository extends Repository<Movie, String> {
+interface MovieRepository extends Repository<Movie, Long> {
 
 	@Query("MATCH (movie:Movie) WHERE movie.title CONTAINS $title RETURN movie")
 	List<Movie> findSearchResults(@Param("title") String title);
