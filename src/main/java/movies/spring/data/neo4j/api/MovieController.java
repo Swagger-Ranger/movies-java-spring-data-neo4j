@@ -3,6 +3,7 @@ package movies.spring.data.neo4j.api;
 import movies.spring.data.neo4j.movies.MovieDetailsDto;
 import movies.spring.data.neo4j.movies.MovieResultDto;
 import movies.spring.data.neo4j.movies.MovieService;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,13 +32,21 @@ class MovieController {
 	}
 
 	@GetMapping("/movie/released")
-	public void updateReleasedByTitle(@RequestParam("id")  Long id,@RequestParam("released")  Integer released) {
-		movieService.updateReleasedByTitle(id, released);
+	public void updateReleasedByTitle(@RequestParam("title") String title, @RequestParam("released") Integer released) {
+		movieService.updateReleasedByTitle(title, released);
 	}
 
-	@PostMapping("/movie/{id}")
-	public void deleteByTitle(@PathVariable("id") Long id) {
-		movieService.deleteMovie(id);
+	@GetMapping("/movie/examplePage")
+	public Page<MovieResultDto> queryExamplePage(@RequestParam("title") String title,
+												 @RequestParam("sorter") String sorter,
+												 @RequestParam("pageSize") Integer pageSize,
+												 @RequestParam("currentPage") Integer currentPage) {
+		return movieService.queryExamplePage(title, sorter, pageSize, currentPage);
+	}
+
+	@DeleteMapping("/movie/{title}")
+	public void deleteByTitle(@PathVariable("title") String title) {
+		movieService.deleteMovie(title);
 	}
 
 	@GetMapping("/search")
