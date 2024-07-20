@@ -26,7 +26,7 @@ interface MovieNeo4jRepository extends Neo4jRepository<Movie, String> {
      * 所以必须在语句中声明 skip 和 limit 和countQuery
      * 只写value的查询语句没有和countQuery 会报错 "Reason: Expected paging query method to have a count query"
      * <p>
-     * :#{orderBy(#pageable)}，这个是分页语句，:是 Neo4j 查询语言（Cypher）中的参数占位符，用于动态注入值。
+     * :#{orderBy(#pageable)}，这个是分页语句，:#{} 表示 SpEL 表达式中的参数占位符，用于动态注入值。而$ 是参数占位符，用于将方法参数传递给查询
      * #{orderBy(#pageable)} 是一个Spring Expression Language (SpEL)表达式，Spring Data会解析这个SpEL表达式，根据Pageable对象中的排序条件生成适当的ORDER BY子句并将其注入到查询中。
      */
     @Query(value = """
